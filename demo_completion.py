@@ -91,8 +91,8 @@ class Trainer:
         self.model.load_state_dict(torch.load(path))                                                                                          
 ```                                                                                                                                           
                                    
-To use this trainer class, you need to define a model, optimizer, and criterion, and then call the `train` method to train the model on your d
-ataset. For example:
+To use this trainer class, you need to define a model, optimizer, and criterion, and then call the `train` method to train the model on your
+dataset. For example:
                                                                                                                                               
 ```python            
 class ToyModel(nn.Module):                                                                                                                    
@@ -121,6 +121,6 @@ test_loss = trainer.test(inputs, labels)
 print(f"Test Loss: {test_loss}")                                       
 ```                                                                    
                                    
-This example trains a simple neural network with one hidden layer on a toy dataset. The `train` method trains the model for each epoch, and th
-e `test` method evaluates the model's performance on unseen data. The `predict` method uses the trained model to make predictions.
+This example trains a simple neural network with one hidden layer on a toy dataset. The `train` method trains the model for each epoch, and
+the `test` method evaluates the model's performance on unseen data. The `predict` method uses the trained model to make predictions.
 '''
