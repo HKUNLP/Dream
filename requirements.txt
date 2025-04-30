@@ -1,0 +1,6 @@
+transformers==4.46.2
+torch==2.5.1
+accelerate>=0.26.0
+bitsandbytes
+gradio==5.26.0
+gradio_client==1.9.0
