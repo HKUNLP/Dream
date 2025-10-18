@@ -1,9 +1,12 @@
 import time
+
 import torch
 from transformers import AutoModel, AutoTokenizer
 
 model_path = "Dream-org/Dream-v0-Instruct-7B"
-model = AutoModel.from_pretrained(model_path, torch_dtype=torch.bfloat16, trust_remote_code=True)
+model = AutoModel.from_pretrained(
+    model_path, torch_dtype=torch.bfloat16, trust_remote_code=True
+)
 tokenizer = AutoTokenizer.from_pretrained(model_path, trust_remote_code=True)
 model = model.to("cuda").eval()
 
@@ -11,7 +14,10 @@ model = model.to("cuda").eval()
 #     {"role": "user", "content": "Janet's ducks lay 16 eggs per day. She eats three for breakfast every morning and bakes muffins for her friends every day with four. She sells the remainder at the farmers' market daily for $2 per fresh duck egg. How much in dollars does she make every day at the farmers' market?"},
 # ]
 messages = [
-    {"role": "user", "content": "Please write a Python class that implements a PyTorch trainer capable of training a model on a toy dataset."}
+    {
+        "role": "user",
+        "content": "Please write a Python class that implements a PyTorch trainer capable of training a model on a toy dataset.",
+    }
 ]
 inputs = tokenizer.apply_chat_template(
     messages, return_tensors="pt", return_dict=True, add_generation_prompt=True
@@ -23,32 +29,31 @@ output = model.diffusion_generate(
     input_ids,
     attention_mask=attention_mask,
     max_new_tokens=512,
-    output_history=True,
+    output_history=False,
     return_dict_in_generate=True,
     steps=512,
     temperature=0.2,
     top_p=0.95,
     alg="entropy",
-    alg_temp=0.,
+    alg_temp=0.0,
 )
 generations = [
-    tokenizer.decode(g[len(p) :].tolist())
-    for p, g in zip(input_ids, output.sequences)
+    tokenizer.decode(g[len(p) :].tolist()) for p, g in zip(input_ids, output.sequences)
 ]
 
 print(generations[0].split(tokenizer.eos_token)[0])
 
 # the following lines print the history of generations
 history = output.history
-for i, h in enumerate(history):
-    print(f"############ Step {i} ############")
-    time.sleep(0.01)
-    # print(tokenizer.decode(h[0].tolist()).split(tokenizer.eos_token)[0].replace(tokenizer.mask_token, " "), end="\r")
-    print(tokenizer.decode(h[0].tolist()), end="\r")
+if history:
+    for i, h in enumerate(history):
+        print(f"############ Step {i} ############")
+        time.sleep(0.01)
+        # print(tokenizer.decode(h[0].tolist()).split(tokenizer.eos_token)[0].replace(tokenizer.mask_token, " "), end="\r")
+        print(tokenizer.decode(h[0].tolist()), end="\r")
 
 
-
-'''An example generation (maybe different due to randomness)
+"""An example generation (maybe different due to randomness)
 <|im_start|>system
 You are a helpful assistant.<|im_end|>                                                                                                        <|im_start|>user    
 Please write a Python class that implements a PyTorch trainer capable of training a model on a toy dataset.<|im_end|>
@@ -123,4 +128,4 @@ print(f"Test Loss: {test_loss}")
                                    
 This example trains a simple neural network with one hidden layer on a toy dataset. The `train` method trains the model for each epoch, and th
 e `test` method evaluates the model's performance on unseen data. The `predict` method uses the trained model to make predictions.
-'''
+"""
