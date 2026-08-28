@@ -83,7 +83,12 @@ print(f"Using device: {device} (dtype={dtype})")
 
 try:
     print(f"Loading model with {dtype}...")
-    model = AutoModel.from_pretrained(model_path, torch_dtype=dtype, trust_remote_code=True)
+    try:
+        # transformers >= 4.56: `dtype` is the replacement for `torch_dtype`
+        model = AutoModel.from_pretrained(model_path, dtype=dtype, trust_remote_code=True)
+    except TypeError:
+        # transformers < 4.56: `dtype` is not accepted yet
+        model = AutoModel.from_pretrained(model_path, torch_dtype=dtype, trust_remote_code=True)
     print(f"Model loaded successfully with {dtype}.")
 except Exception as e:
     print(f"Fatal Error loading model: {e}")
